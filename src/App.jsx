@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom";
 
 import Home from './containers/Home';
@@ -14,7 +13,7 @@ import MusicBar from './components/MusicBar';
 const App = () => {
   return (
     <Router>
-      <div className="h-screen bg-gray-900 grid grid-cols-12">
+      <div className="h-screen font-sans text-gray-200 bg-gray-900 grid grid-cols-12">
         <Sidenav />
         <Switch>
           <Route exact path="/" component={Home} />
