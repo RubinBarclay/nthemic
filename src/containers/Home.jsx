@@ -4,9 +4,13 @@ import FeaturedBar from '../components/FeaturedBar';
 
 const Home = () => {
   return (
-    <div className="col-span-8 grid-cols-12 auto-rows-min">
+    <div className="overflow-y-scroll scrollbar-hide col-span-8 grid-cols-12">
       <Header />
-      <FeaturedBar title="New and trending" />
+      <div className="p-4">
+        <FeaturedBar title="New music" />
+        <FeaturedBar title="Trending tracks" />
+        <FeaturedBar title="Rap & RnB" />
+      </div>
     </div>
   )
 }

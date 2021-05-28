@@ -5,7 +5,7 @@ const FeaturedBar = (props) => {
   const scrollWrapperRef = useRef();
   const { isDragging } = useScrollBox(scrollWrapperRef);
   return (
-    <div className="relative w-full p-8 pb-0 overflow-hidden">
+    <div className="relative w-full p-4 overflow-hidden">
       <h4 className="py-2 text-2xl">{props.title}</h4>
       <div className="w-full h-full overflow-x-scroll overflow-y-hidden scrollbar-hide" ref={scrollWrapperRef}>
         <div className="inline-flex h-full" role="list" style={{ pointerEvents: isDragging ? 'none' : undefined }}>
