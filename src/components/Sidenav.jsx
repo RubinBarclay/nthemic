@@ -8,7 +8,7 @@ import {
 
 const Sidenav = () => {
   return (
-    <div className="py-2 bg-gray-800 col-span-3">
+    <div className="py-2 bg-gray-800 col-span-2">
       <h1 className="p-6 text-3xl font-semibold text-center text-purple-500"><span className="text-4xl text-purple-400">N</span>themic</h1>
       <div className="flex flex-col">
 

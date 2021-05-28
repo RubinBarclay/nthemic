@@ -1,9 +1,12 @@
 import React from 'react';
+import Header from '../components/Header';
+import FeaturedBar from '../components/FeaturedBar';
 
 const Home = () => {
   return (
-    <div className="relative col-span-9 w-100">
-
+    <div className="col-span-8 grid-cols-12 auto-rows-min">
+      <Header />
+      <FeaturedBar title="New and trending" />
     </div>
   )
 }

@@ -13,7 +13,7 @@ import MusicBar from './components/MusicBar';
 const App = () => {
   return (
     <Router>
-      <div className="h-screen font-sans text-gray-200 bg-gray-900 grid grid-cols-12">
+      <div className="h-screen font-sans text-gray-200 bg-gray-900 grid grid-cols-10">
         <Sidenav />
         <Switch>
           <Route exact path="/" component={Home} />
