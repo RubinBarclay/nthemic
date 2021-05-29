@@ -1,7 +1,6 @@
 import React from 'react';
 import SearchField from '../components/SearchField';
 import SearchResults from '../components/SearchResults';
-import { PlayIcon } from '@heroicons/react/solid';
 
 const Search = () => {
   return (
