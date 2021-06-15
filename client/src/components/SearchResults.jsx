@@ -15,7 +15,7 @@ const SearchResults = (props) => {
       <div className="w-3/5">
         <h2 className="text-2xl">{props.type}</h2>
         {
-          results.map(song => <SearchResult {...song} />)
+          results.map(song => <SearchResult key={Date.now() + Math.random()} {...song} />)
         }
       </div>
     </div>
