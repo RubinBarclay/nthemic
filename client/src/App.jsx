@@ -1,28 +1,15 @@
-import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from "react-router-dom";
-
-import Home from './containers/Home';
-import Search from './containers/Search';
-import Sidenav from './components/Sidenav';
-import MusicBar from './components/MusicBar';
+import React, { useState, useEffect } from 'react';
+import Login from './containers/Login';
+import Nthemic from './containers/Nthemic';
 
 const App = () => {
-  return (
-    <Router>
-      <div className="h-screen font-sans text-gray-200 bg-gray-900 grid-rows-custom grid grid-cols-10">
-        <Sidenav />
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/search" component={Search} />
-        </Switch>
-        <MusicBar />
-      </div>
-    </Router>
-  )
+  const [code, setCode] = useState();
+
+  useEffect(() => {
+    setCode(new URLSearchParams(window.location.search).get('code'));
+  }, [])
+
+  return code ? <Nthemic code={code} /> : <Login />
 }
 
 export default App
