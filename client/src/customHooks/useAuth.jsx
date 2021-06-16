@@ -6,12 +6,13 @@ const useAuth = (code) => {
   const [refreshToken, setRefreshToken] = useState();
   const [expiresIn, setExpiresIn] = useState();
 
+  // Login Handler
   useEffect(() => {
     const url = 'http://localhost:4000/login';
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(code)
+      body: JSON.stringify({ code })
     }
 
     fetch(url, options)
@@ -19,7 +20,7 @@ const useAuth = (code) => {
       .then(data => {
         setAccessToken(data.accessToken)
         setRefreshToken(data.refreshToken)
-        setExpiresIn(data.setExpiresIn)
+        setExpiresIn(data.expiresIn)
         window.history.pushState({}, null, '/')
       })
       .catch(() => {
@@ -27,17 +28,7 @@ const useAuth = (code) => {
       })
     }, [code])
 
-    // axios.post('http://localhost:4000/login', code)
-    //   .then(res => {
-    //     console.log(res.data)
-    //     window.history.pushState({}, null, '/')
-    //   })
-    //   .catch((err) => {
-    //     console.log(err)
-    //     window.location = '/'
-    //   })
-  // }, [code])
-
+  // Refresh handler
   useEffect(() => {
     // Prevent refresh if either variable is undefined
     if (!refreshToken || !expiresIn) return
