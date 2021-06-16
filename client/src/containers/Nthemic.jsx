@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import useAuth from '../customHooks/useAuth';
+import AuthCodeContext from '../context/AuthCodeContext';
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,21 +12,21 @@ import Search from './Search';
 import Sidenav from '../components/Sidenav';
 import MusicBar from '../components/MusicBar';
 
-const Nthemic = (code) => {
+const Nthemic = ({ code }) => {
   const accessToken = useAuth(code);
-
-  useEffect(() => console.log('Access Token: ', accessToken));
 
   return (
     <Router>
-      <div className="h-screen font-sans text-gray-200 bg-gray-900 grid-rows-custom grid grid-cols-10">
-        <Sidenav />
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/search" component={Search} />
-        </Switch>
-        <MusicBar />
-      </div>
+      <AuthCodeContext.Provider value={accessToken}>
+        <div className="h-screen font-sans text-gray-200 bg-gray-900 grid-rows-custom grid grid-cols-10">
+          <Sidenav />
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/search" component={Search} />
+          </Switch>
+          <MusicBar />
+        </div>
+      </AuthCodeContext.Provider>
     </Router>
   )
 }

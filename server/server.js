@@ -16,7 +16,8 @@ app.post('/login', (req, res) => {
     clientSecret: 'e4196ec60b9641db89a329ce6541f60b'
   })
 
-  spotifyApi.authorizationCodeGrant(code)
+  spotifyApi
+    .authorizationCodeGrant(code)
     .then(data => {
       res.json({
         accessToken: data.body.access_token,

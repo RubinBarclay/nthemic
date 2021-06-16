@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import SpotifyPlayer from 'react-spotify-web-playback';
+import AuthCodeContext from '../context/AuthCodeContext';
 import { 
   PlayIcon, 
   PauseIcon, 
@@ -6,8 +8,16 @@ import {
   FastForwardIcon 
 } from '@heroicons/react/solid'
 
-const MusicBar = () => {
-    // <div className="absolute bottom-0 flex items-center justify-center w-screen h-20 bg-gray-900 border-t border-gray-800">
+const MusicBar = ({ trackUri }) => {
+  const accessToken = useContext(AuthCodeContext);
+
+  // return accessToken ? (
+  //   <SpotifyPlayer 
+  //     token={accessToken}  
+  //     uris={trackUri ? [trackUri] : []}
+  //     showSaveIcon />
+  // ) : null;
+
   return (
     <div className="flex items-center justify-center w-screen h-20 bg-gray-900 border-t border-gray-800">
       <div className="w-16 bg-red-500 h-14"></div>
