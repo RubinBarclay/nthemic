@@ -9,6 +9,8 @@ import App from './App'
 //   Grade(document.querySelectorAll('.gradient-wrap'));
 // })
 
+window.onSpotifyWebPlaybackSDKReady
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
