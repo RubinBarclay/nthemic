@@ -74,6 +74,7 @@ const MusicBar = ({ track }) => {
 
   const playTrack = ({
     spotify_uri,
+    position_ms,
     playerInstance: {
       _options: {
         getOAuthToken,
@@ -84,7 +85,10 @@ const MusicBar = ({ track }) => {
     getOAuthToken(access_token => {
       fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceID}`, {
         method: 'PUT',
-        body: JSON.stringify({ uris: [spotify_uri] }),
+        body: JSON.stringify({ 
+          uris: [spotify_uri],
+          position_ms: position_ms ? position_ms : 0
+        }),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${access_token}`
@@ -108,8 +112,13 @@ const MusicBar = ({ track }) => {
   }
 
   return display && trackInfo ? (
-    <div className="relative flex items-center justify-center w-screen h-20 bg-gray-900"> {/* border-t border-gray-800"> */}
-      <ProgressBar duration={trackInfo.duration} playing={playing} />
+    <div className="relative flex items-center justify-center w-screen h-20 bg-gray-900">
+      <ProgressBar 
+        track={trackInfo} 
+        duration={trackInfo.duration} 
+        playing={playing} 
+        player={player.current}
+        selectPosition={playTrack}/>
       <img className="w-16 h-14" src={trackInfo?.albumURL} alt={trackInfo?.title} />
       <div className="px-6 text-center">
         <p>{trackInfo?.title}</p>
