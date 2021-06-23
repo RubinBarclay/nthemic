@@ -3,10 +3,9 @@ import Big from 'big.js';
 
 const ProgressBar = ({ 
   track, 
-  duration,
   playing, 
-  player,
-  selectPosition
+  setPlaying,
+  player
 }) => {
   const [progressState, setProgressState] = useState('0%');
   const [transition, setTransition] = useState(true);
@@ -35,42 +34,36 @@ const ProgressBar = ({
   }, [track])
 
   const updateProgress = () => {
-
-    const percentage = timePassed.current.plus(500).div(duration);
-
+    const percentage = timePassed.current.plus(500).div(track.duration);
     const progressStr = percentage.times(100).toString() + '%';
-
-    console.log(progressStr)
 
     timePassed.current = timePassed.current.plus(500);
     progressSave.current = progressStr;
     setProgressState(progressStr);
+    endOfTrackCheck();
   }
 
   const selectProgress = (input) => { // value is between 0-200
     const value = new Big(input);
     const percentage = value.div(2).toFixed(1);
 
-    const newPosition = new Big(duration).times(new Big(percentage).div(100));
-
-    // console.log(percentage + '%')
+    const newPosition = new Big(track.duration).times(new Big(percentage).div(100));
 
     setTransition(false);
     setProgressState(percentage + '%');
     progressSave.current = percentage + '%';
     timePassed.current = newPosition;
 
-
-    console.log(newPosition.toNumber());
-
-    // Api request (playtrack w/ position)
-    selectPosition({
-      spotify_uri: track.uri, 
-      playerInstance: player,
-      position_ms: newPosition.toNumber()
-    })
+    // Seek new position in track
+    player.seek(newPosition.toNumber())
+    endOfTrackCheck();
   }
 
+  const endOfTrackCheck = () => {
+    if (timePassed.current.gte(track.duration)) {
+      setPlaying(prevPlaying => !prevPlaying);
+    }
+  }
   return (
     <div className="absolute top-0 left-0 right-0 flex bg-gray-700">
       <input 

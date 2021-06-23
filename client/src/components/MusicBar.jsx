@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import AuthCodeContext from '../context/AuthCodeContext';
 import ProgressBar from '../components/ProgressBar';
-// import SpotifyWebApi from 'spotify-web-api-node';
-// import axios from 'axios';
 import { 
   PlayIcon, 
   PauseIcon, 
@@ -14,16 +12,10 @@ const MusicBar = ({ track }) => {
   const accessToken = useContext(AuthCodeContext);
 
   const [playing, setPlaying] = useState(false);
-
   const [trackInfo, setTrackInfo] = useState();
-
   const [deviceID, setDeviceID] = useState();
-
   const [display, setDisplay] = useState(false);
 
-  // const [player, setPlayer] = useState();
-
-  // let player;
   let player = useRef();
 
   useEffect(() => {
@@ -115,10 +107,9 @@ const MusicBar = ({ track }) => {
     <div className="relative flex items-center justify-center w-screen h-20 bg-gray-900">
       <ProgressBar 
         track={trackInfo} 
-        duration={trackInfo.duration} 
         playing={playing} 
-        player={player.current}
-        selectPosition={playTrack}/>
+        setPlaying={setPlaying}
+        player={player.current} />
       <img className="w-16 h-14" src={trackInfo?.albumURL} alt={trackInfo?.title} />
       <div className="px-6 text-center">
         <p>{trackInfo?.title}</p>
