@@ -1,15 +1,15 @@
 import React from 'react';
 import { PlayIcon } from '@heroicons/react/solid';
 
-const SearchResult = (props) => (
-  <div className="flex items-center my-2 cursor-pointer">
-    <img className="w-24 h-20 bg-red-500" src={props.albumURL} alt={props.title} />
+const SearchResult = ({ play, track}) => (
+  <div className="flex items-center my-2 cursor-pointer" onClick={() => play(track)}>
+    <img className="w-24 h-20 bg-red-500" src={track.albumURL} alt={track.title} />
     <div className="px-2 mb-2">
-      <p className="text-xl">{props.title}</p>
-      <p className="text-lg text-gray-400">{props.artist}</p>
+      <p className="text-xl">{track.title}</p>
+      <p className="text-lg text-gray-400">{track.artist}</p>
     </div>
     <PlayIcon className="w-12 h-12 ml-auto" />
-    {/* <span className="px-2 text-lg">{props.duration}</span> */}
+    {/* <span className="px-2 text-lg">{track.duration}</span> */}
   </div>
 )
 
