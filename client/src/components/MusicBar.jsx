@@ -67,32 +67,70 @@ const MusicBar = ({ item }) => {
 
     spotifyApi.setAccessToken(accessToken);
 
-    if (item.type === 'track') {
-      setTrackInfo(item);
-      setTrackList([item]);
-    } else {
-      spotifyApi.getAlbumTracks(item.id)
-        .then(data => {
+    switch (item.type) {
+      case 'track':
+        setTrackInfo(item);
+        setTrackList([item]);
+        break;
 
-          const extractTrackInfo = (track) => ({
-            ...item,
-            id: track.id,
-            name: track.name,
-            duration: track.duration_ms,
-            uri: track.uri,
-            type: track.type,
+      case 'album':
+        spotifyApi.getAlbumTracks(item.id)
+          .then(data => {
+
+            const extractTrackInfo = (track) => ({
+              ...item,
+              id: track.id,
+              uri: track.uri,
+              type: track.type,
+              name: track.name,
+              duration: track.duration_ms,
+            })
+
+            // Add all tracks in album to array
+            setTrackList(data.body.items.map(extractTrackInfo));
+
+            // console.log(extractTrackInfo(data.body.items[0]))
+            // console.log(data.body.items[0]);
+
+            // Play first track of album
+            setTrackInfo(extractTrackInfo(data.body.items[0]));
           })
+          .catch(err => console.log(err))
+        break;
 
-          // Add all tracks in album to array
-          setTrackList(data.body.items.map(extractTrackInfo));
+      case 'playlist':
+        spotifyApi.getPlaylistTracks(item.id)
+          .then(data => {
+            console.log(data.body)
 
-          // console.log(extractTrackInfo(data.body.items[0]))
-          // console.log(data.body.items[0]);
+            const extractTrackInfo = (track) => ({
+              ...item,
+              id: track.track.id,
+              uri: track.track.uri,
+              type: track.track.type,
+              name: track.track.name,
+              album: track.track.album.name,
+              artist: track.track.artists[0].name,
+              duration: track.track.duration_ms,
+              albumCoverLG: track.track.album.images[1].url,
+              albumCoverSM: track.track.album.images[2].url
+            })
 
-          // Play first track of album
-          setTrackInfo(extractTrackInfo(data.body.items[0]));
-        })
-        .catch(err => console.log(err))
+            // Add all tracks in album to array
+            setTrackList(data.body.items.map(extractTrackInfo));
+
+            // console.log(extractTrackInfo(data.body.items[0]))
+            // console.log(data.body.items[0]);
+
+            // Play first track of album
+            setTrackInfo(extractTrackInfo(data.body.items[0]));
+          })
+          .catch(err => console.log(err))
+        break;
+
+      default:
+        console.log('[ERROR] item.type not indentified');
+        console.log('item.type: ', item.type);
     }
   }, [item])
 
