@@ -9,6 +9,8 @@ const Home = ({ play }) => {
 
   const [topTracks, setTopTracks] = useState([]);
   const [newReleases, setNewReleases] = useState([]);
+  const [featuredPlaylist, setFeaturedPlaylist] = useState();
+  const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
 
   const spotifyApi = new SpotifyWebApi({
     clientId: '11c9d0da629948fb87a800307b571162',
@@ -54,19 +56,36 @@ const Home = ({ play }) => {
       })
       .catch(err => console.log(err));
 
+    spotifyApi.getFeaturedPlaylists({ limit : 11 })
+      .then(data => {
+        console.log(data.body);
+        const playlists = data.body.playlists.items.map(playlist => ({
+          id: playlist.id,
+          uri: playlist.uri,
+          type: playlist.type,
+          name: playlist.name,
+          description: playlist.description,
+          albumCoverLG: playlist.images[0].url,
+        }))
+
+        setFeaturedPlaylist(playlists[0]);
+        setFeaturedPlaylists(playlists.slice(1));
+      })
+      .catch(err => console.log(err));
+
 
   }, [accessToken])
 
-  return (
+  return featuredPlaylist ? (
     <div className="overflow-y-scroll border-b border-gray-700 scrollbar-hide col-span-8 grid-cols-12">
-      <Header />
+      <Header playlist={featuredPlaylist} play={play} />
       <div className="p-4">
         <FeaturedBar title="Your Top Tracks" items={topTracks} play={play} />
         <FeaturedBar title="New music" items={newReleases} play={play} />
-        <FeaturedBar title="Rap & RnB"  items={[]} play={play} />
+        <FeaturedBar title="Featured Playlists"  items={featuredPlaylists} play={play} />
       </div>
     </div>
-  )
+  ) : null
 }
 
 export default Home;
