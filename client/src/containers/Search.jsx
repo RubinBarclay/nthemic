@@ -20,15 +20,17 @@ const Search = ({ play }) => {
     spotifyApi.setAccessToken(accessToken);
 
     let cancel = false;
-    spotifyApi.searchTracks(search).then(res => {
-      console.log(res.body.tracks.items[0]);
+    spotifyApi.searchTracks(search).then(data => {
+      console.log(data.body.tracks.items[0]);
       if (cancel) return;
-      setSearchResults(res.body.tracks.items.map(track => ({
+      setSearchResults(data.body.tracks.items.map(track => ({
         id: track.id,
-        artist: track.artists[0].name,
-        title: track.name,
         uri: track.uri,
-        albumURL: track.album.images[2].url,
+        name: track.name,
+        type: track.type,
+        artist: track.artists[0].name,
+        albumCoverLG: track.album.images[2].url,
+        albumCoverSM: track.album.images[2].url,
         duration: track.duration_ms
       })))
     })

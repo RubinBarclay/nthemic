@@ -3,6 +3,7 @@ import Big from 'big.js';
 
 const ProgressBar = ({ 
   track, 
+  trackList,
   playing, 
   setPlaying,
   player
@@ -34,7 +35,7 @@ const ProgressBar = ({
   }, [track])
 
   const updateProgress = () => {
-    const percentage = timePassed.current.plus(500).div(track.duration);
+    const percentage = timePassed.current.plus(500).div(track?.duration);
     const progressStr = percentage.times(100).toString() + '%';
 
     timePassed.current = timePassed.current.plus(500);
@@ -47,7 +48,7 @@ const ProgressBar = ({
     const value = new Big(input);
     const percentage = value.div(2).toFixed(1);
 
-    const newPosition = new Big(track.duration).times(new Big(percentage).div(100));
+    const newPosition = new Big(track?.duration).times(new Big(percentage).div(100));
 
     setTransition(false);
     setProgressState(percentage + '%');
@@ -60,7 +61,11 @@ const ProgressBar = ({
   }
 
   const endOfTrackCheck = () => {
-    if (timePassed.current.gte(track.duration)) {
+    // Don't stop playing if track is NOT last item in trackList
+    if (track.id !== trackList[trackList.length - 1]?.id) return;
+
+    // Stop playing when track ends
+    if (timePassed.current.gte(track?.duration)) {
       setPlaying(prevPlaying => !prevPlaying);
     }
   }
@@ -81,11 +86,6 @@ const ProgressBar = ({
       }}></div>
     </div>
   )
-
-  // return (
-  //   <div className="absolute top-0 left-0 right-0 flex bg-gray-700 cursor-pointer">
-  //   </div>
-  // )
 }
 
 export default ProgressBar;
