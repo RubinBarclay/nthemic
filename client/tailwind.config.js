@@ -6,6 +6,10 @@ module.exports = {
       gridTemplateRows: { 
         // Custom grid row layout
         'custom': '1fr 5rem'
+      },
+      brightness: {
+        '85': '.85',
+        '80': '.80',
       }
     },
   },

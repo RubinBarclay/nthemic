@@ -17,7 +17,7 @@ const MusicBar = ({ item }) => {
   const [trackInfo, setTrackInfo] = useState();
   const [trackList, setTrackList] = useState([]);
   const [globalDeviceID, setGlobalDeviceID] = useState();
-  // const [display, setDisplay] = useState(false);
+  const [display, setDisplay] = useState(false);
 
   let player = useRef();
 
@@ -25,18 +25,10 @@ const MusicBar = ({ item }) => {
     clientId: '11c9d0da629948fb87a800307b571162',
   })
 
-  // ORDER OF USE EFFECTS IS THE CURRENT PROBLEM. try steps below
-  // 1. initialiaze player
-  // 2. set track info <-- you should be able to do this without re-initializing the player
-  // 3. play song
-
   // Initiate Spotify Web Playback SDK
   useEffect(() => {
-    // if (!trackInfo) return;
     if (!accessToken) return;
     if (!window.Spotify) return;
-
-    console.log('CREATING PLAYER: ', item)
 
     player.current = new window.Spotify.Player({
       name: 'Nthemic Music Player',
@@ -53,6 +45,11 @@ const MusicBar = ({ item }) => {
         console.log('[ERROR] The Web Playback SDK failed to connect to Spotify')
       }
     })
+
+    player.current.addListener('ready', ({ device_id }) => {
+      setGlobalDeviceID(device_id);
+      // console.log('[DEVICE_ID]', device_id)
+    }) 
 
     // Disconnect player when access token changes
     return () => player.current.disconnect();
@@ -76,7 +73,6 @@ const MusicBar = ({ item }) => {
       case 'album':
         spotifyApi.getAlbumTracks(item.id)
           .then(data => {
-
             const extractTrackInfo = (track) => ({
               ...item,
               id: track.id,
@@ -89,9 +85,6 @@ const MusicBar = ({ item }) => {
             // Add all tracks in album to array
             setTrackList(data.body.items.map(extractTrackInfo));
 
-            // console.log(extractTrackInfo(data.body.items[0]))
-            // console.log(data.body.items[0]);
-
             // Play first track of album
             setTrackInfo(extractTrackInfo(data.body.items[0]));
           })
@@ -101,8 +94,6 @@ const MusicBar = ({ item }) => {
       case 'playlist':
         spotifyApi.getPlaylistTracks(item.id)
           .then(data => {
-            console.log(data.body)
-
             const extractTrackInfo = (track) => ({
               ...item,
               id: track.track.id,
@@ -116,13 +107,10 @@ const MusicBar = ({ item }) => {
               albumCoverSM: track.track.album.images[2].url
             })
 
-            // Add all tracks in album to array
+            // Add all tracks in playlist to array
             setTrackList(data.body.items.map(extractTrackInfo));
 
-            // console.log(extractTrackInfo(data.body.items[0]))
-            // console.log(data.body.items[0]);
-
-            // Play first track of album
+            // Play first track of playlist
             setTrackInfo(extractTrackInfo(data.body.items[0]));
           })
           .catch(err => console.log(err))
@@ -139,29 +127,18 @@ const MusicBar = ({ item }) => {
     if (!trackInfo) return;
     if (!player.current) return;
 
-    console.log(trackInfo)
+    setDisplay(true); 
 
-    player.current.addListener('ready', ({ device_id }) => {
-      // setDisplay(true); 
-      setGlobalDeviceID(device_id);
-      console.log('[DEVICE_ID]', device_id)
-
-      // Play track immediately when selected
-      playTrack({
-        type: item.type, // tells function what type of uri to use
-        deviceID: device_id,
-        spotify_uri: item.uri, // passing original item uri (e.g. album instead of individual track uri)
-        playerInstance: player.current 
-      });
-    }) 
+    // Play track once trackInfo is set
+    playTrack({
+      type: trackInfo.type, // tells function what type of uri to use
+      deviceID: globalDeviceID,
+      spotify_uri: trackInfo.uri, // passing original item uri (e.g. album instead of individual track uri)
+      playerInstance: player.current 
+    });
 
     player.current.addListener('player_state_changed', state => {
-      // console.log(state)
-
       if (!state) return;
-
-      // console.log(item)
-      // console.log(trackInfo)
 
       if (trackInfo.id !== state.track_window.current_track.id) {
         // Finds info about new (currently) playing track
@@ -170,17 +147,8 @@ const MusicBar = ({ item }) => {
         ) 
 
         setTrackInfo(newTrack); // just set information, context_uri takes care of auto playing songs
-
-        // Sets new track info and plays new track
-        // setTrackInfo(newTrack);
-        // playTrack({
-        //   type: newTrack.type,
-        //   spotify_uri: newTrack.uri, 
-        //   playerInstance: player.current 
-        // });
       }
     })
-
   }, [trackInfo])
 
   // Play track from spotify Web API
@@ -212,7 +180,6 @@ const MusicBar = ({ item }) => {
         body: JSON.stringify(options),
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${accessToken}`
           'Authorization': `Bearer ${access_token}`
         },
       });
@@ -236,7 +203,7 @@ const MusicBar = ({ item }) => {
     player.current.nextTrack()
   }
 
-  return true ? (
+  return display ? (
     <div className="relative flex items-center justify-center w-screen h-20 bg-gray-900">
       <ProgressBar 
         track={trackInfo} 

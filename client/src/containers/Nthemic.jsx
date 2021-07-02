@@ -31,7 +31,8 @@ const Nthemic = ({ code }) => {
             <Route exact path="/" render={() => <Home play={setCurrentItem} />} />
             <Route path="/search" render={() => <Search play={setCurrentItem} />} />
           </Switch>
-          { currentItem ? <MusicBar item={currentItem} /> : null }
+          {/* currentItem ? <MusicBar item={currentItem} /> : null */}
+          <MusicBar item={currentItem} />
         </div>
       </AuthCodeContext.Provider>
     </Router>
