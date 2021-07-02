@@ -11,15 +11,16 @@ import Home from './Home';
 import Search from './Search';
 import Sidenav from '../components/Sidenav';
 import MusicBar from '../components/MusicBar';
-// import SpotifyPlayer from 'react-spotify-web-playback';
 
 const Nthemic = ({ code }) => {
   const accessToken = useAuth(code);
-  const [currentTrack, setCurrentTrack] = useState();
+
+  // Item can be a track, album or playlist
+  const [currentItem, setCurrentItem] = useState();
 
   useEffect(() => {
-    console.log(currentTrack)
-  }, [currentTrack])
+    console.log('CurrentItem: ', currentItem)
+  }, [currentItem])
 
   return accessToken ? (
     <Router>
@@ -27,10 +28,11 @@ const Nthemic = ({ code }) => {
         <div className="h-screen font-sans text-gray-200 bg-gray-900 grid-rows-custom grid grid-cols-10">
           <Sidenav />
           <Switch>
-            <Route exact path="/" component={Home} />
-            <Route path="/search" render={() => <Search play={setCurrentTrack} />} />
+            <Route exact path="/" render={() => <Home play={setCurrentItem} />} />
+            <Route path="/search" render={() => <Search play={setCurrentItem} />} />
           </Switch>
-          <MusicBar track={currentTrack} /> 
+          {/* currentItem ? <MusicBar item={currentItem} /> : null */}
+          <MusicBar item={currentItem} />
         </div>
       </AuthCodeContext.Provider>
     </Router>
