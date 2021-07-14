@@ -16,6 +16,7 @@ const MusicBar = ({ item }) => {
   const [playing, setPlaying] = useState(false);
   const [trackInfo, setTrackInfo] = useState();
   const [trackList, setTrackList] = useState([]);
+  const [duration, setDuration] = useState();
   const [globalDeviceID, setGlobalDeviceID] = useState();
   const [display, setDisplay] = useState(false);
 
@@ -35,7 +36,7 @@ const MusicBar = ({ item }) => {
       getOAuthToken: callback => {
         callback(accessToken)
       },
-      volume: 0.45
+      volume: 0.35
     })
 
     player.current.connect().then(success => {
@@ -48,7 +49,6 @@ const MusicBar = ({ item }) => {
 
     player.current.addListener('ready', ({ device_id }) => {
       setGlobalDeviceID(device_id);
-      // console.log('[DEVICE_ID]', device_id)
     }) 
 
     // Disconnect player when access token changes
@@ -76,17 +76,20 @@ const MusicBar = ({ item }) => {
             const extractTrackInfo = (track) => ({
               ...item,
               id: track.id,
-              uri: track.uri,
-              type: track.type,
+              // uri: track.uri,
+              // type: track.type,
               name: track.name,
               duration: track.duration_ms,
             })
 
+            console.log(data.body.items.map(extractTrackInfo))
+            console.log(data.body.items[0])
+
+            // Set info for first track
+            setTrackInfo(extractTrackInfo(data.body.items[0]));
+
             // Add all tracks in album to array
             setTrackList(data.body.items.map(extractTrackInfo));
-
-            // Play first track of album
-            setTrackInfo(extractTrackInfo(data.body.items[0]));
           })
           .catch(err => console.log(err))
         break;
@@ -97,8 +100,8 @@ const MusicBar = ({ item }) => {
             const extractTrackInfo = (track) => ({
               ...item,
               id: track.track.id,
-              uri: track.track.uri,
-              type: track.track.type,
+              // uri: track.track.uri,
+              // type: track.track.type,
               name: track.track.name,
               album: track.track.album.name,
               artist: track.track.artists[0].name,
@@ -107,11 +110,14 @@ const MusicBar = ({ item }) => {
               albumCoverSM: track.track.album.images[2].url
             })
 
+            console.log(data.body.items.map(extractTrackInfo))
+            console.log(data.body.items[0])
+
+            // Set info for first track
+            setTrackInfo(extractTrackInfo(data.body.items[0]));
+
             // Add all tracks in playlist to array
             setTrackList(data.body.items.map(extractTrackInfo));
-
-            // Play first track of playlist
-            setTrackInfo(extractTrackInfo(data.body.items[0]));
           })
           .catch(err => console.log(err))
         break;
@@ -120,41 +126,47 @@ const MusicBar = ({ item }) => {
         console.log('[ERROR] item.type not indentified');
         console.log('item.type: ', item.type);
     }
+
+    // This starts player state listener in useEffect below
+    // It should only be run once, hence the seperate useEffect
+    // setStateListenerReady(true);
   }, [item])
+
+  //   // player.current.addListener('player_state_changed', state => {
+  //   //   if (!state) return;
+
+  //   //   if (trackInfo.id !== state.track_window.current_track.id) {
+  //   //     // Finds info about new (currently) playing track
+  //   //     const newTrack = trackList.find(track => (
+  //   //       track.id === state.track_window.current_track.id)
+  //   //     ) 
+
+  //   //     console.log(newTrack)
+  //   //     if (newTrack) setTrackInfo(newTrack); // just set information, context_uri takes care of auto playing songs
+  //   //   }
+  //   // })
 
   // Play track immediately when selected
   useEffect(() => {
     if (!trackInfo) return;
     if (!player.current) return;
 
-    setDisplay(true); 
 
-    // Play track once trackInfo is set
+    // Play track once trackInfo and trackList is set
     playTrack({
       type: trackInfo.type, // tells function what type of uri to use
-      deviceID: globalDeviceID,
       spotify_uri: trackInfo.uri, // passing original item uri (e.g. album instead of individual track uri)
       playerInstance: player.current 
     });
 
-    player.current.addListener('player_state_changed', state => {
-      if (!state) return;
+    setDisplay(true); 
 
-      if (trackInfo.id !== state.track_window.current_track.id) {
-        // Finds info about new (currently) playing track
-        const newTrack = trackList.find(track => (
-          track.id === state.track_window.current_track.id)
-        ) 
-
-        setTrackInfo(newTrack); // just set information, context_uri takes care of auto playing songs
-      }
-    })
-  }, [trackInfo])
+  }, [trackList]) // Only run when new trackList is changed
 
   // Play track from spotify Web API
   const playTrack = ({
     type,
-    deviceID,
+    // deviceID,
     spotify_uri,
     playerInstance: {
       _options: {
@@ -162,7 +174,7 @@ const MusicBar = ({ item }) => {
       }
     }
   }) => {
-    console.log(deviceID, globalDeviceID)
+    // console.log(deviceID, globalDeviceID)
 
     // Sets context_uri for when type is albums or playlists 
     const options = type === 'track' 
@@ -170,11 +182,11 @@ const MusicBar = ({ item }) => {
       : { context_uri: spotify_uri }
 
     // Use deviceID from state if not passed as an argument
-    const device_id = deviceID ? deviceID : globalDeviceID;
+    // const device_id = deviceID ? deviceID : globalDeviceID;
 
     setPlaying(true);
     getOAuthToken(access_token => {
-      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
+      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${globalDeviceID}`, {
         method: 'PUT',
         // body: JSON.stringify(options),
         body: JSON.stringify(options),
@@ -196,11 +208,29 @@ const MusicBar = ({ item }) => {
   }
 
   const prevTrack = () => {
-    player.current.previousTrack()
+    const index = trackList.findIndex(track => trackInfo.id === track.id) - 1;
+
+    // If track not first in trackList play previous track
+    if (index >= 0) {
+      setTrackInfo(trackList[index]);
+      player.current.previousTrack()
+    } else { // else pause track and go to start
+      player.current.pause();
+      setDuration('min');
+    }
   }
 
   const nextTrack = () => {
-    player.current.nextTrack()
+    const index = trackList.findIndex(track => trackInfo.id === track.id) + 1;
+
+    // If track not last in trackList play next track
+    if (index < trackList.length) {
+      setTrackInfo(trackList[index]);
+      player.current.nextTrack()
+    } else { // else pause track and go to end
+      player.current.pause();
+      setDuration('max');
+    }
   }
 
   return display ? (
@@ -208,9 +238,10 @@ const MusicBar = ({ item }) => {
       <ProgressBar 
         track={trackInfo} 
         trackList={trackList}
+        duration={duration}
         playing={playing} 
         setPlaying={setPlaying}
-        player={player.current} />
+        player={player.current} /> 
       <img className="w-16 h-14" src={trackInfo?.albumCoverSM} alt={trackInfo?.name} />
       <div className="px-6 text-center">
         <p>{trackInfo?.name}</p>

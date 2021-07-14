@@ -6,12 +6,19 @@ const ProgressBar = ({
   trackList,
   playing, 
   setPlaying,
+  duration,
   player
 }) => {
   const [progressState, setProgressState] = useState('0%');
   const [transition, setTransition] = useState(true);
+
   let progressSave = useRef('0%');
   let timePassed = useRef(new Big(0));
+
+  useEffect(() => {
+    // console.log('TRACK:', track)
+    // console.log('td', track?.duration)
+  }, [])
 
   useEffect(() => {
     setTransition(true);
@@ -28,14 +35,37 @@ const ProgressBar = ({
 
   // Reset everything when changing track
   useEffect(() => {
-    setTransition(false);
-    setProgressState('0%');
+    // setTransition(false);
     progressSave.current = '0%';
     timePassed.current = new Big(0);
+    setProgressState('0%');
+
+    console.log('TRACK:', track)
+    console.log('td', track?.duration)
   }, [track])
 
+  useEffect(() => {
+    switch (duration) {
+      case 'max':
+        setPlaying(false);
+        setProgressState('100%')
+        break;
+
+      case 'min':
+        setPlaying(false);
+        setProgressState('0%')
+        break;
+
+      default:
+        // if duration === 100%, nextTrack()
+        // this fixes auto pause when album ends
+        // and could potentially fix progress selection bug
+    }
+  }, [duration])
+
   const updateProgress = () => {
-    const percentage = timePassed.current.plus(500).div(track?.duration);
+    // const percentage =?.duration ? timePassed.current.plus(500).div?.duration) : new Big(0); // prevent division by 0
+    const percentage = timePassed.current.plus(500).div(track?.duration); // prevent division by 0
     const progressStr = percentage.times(100).toString() + '%';
 
     timePassed.current = timePassed.current.plus(500);
@@ -50,10 +80,11 @@ const ProgressBar = ({
 
     const newPosition = new Big(track?.duration).times(new Big(percentage).div(100));
 
-    setTransition(false);
-    setProgressState(percentage + '%');
     progressSave.current = percentage + '%';
     timePassed.current = newPosition;
+
+    setTransition(false);
+    setProgressState(percentage + '%');
 
     // Seek new position in track
     player.seek(newPosition.toNumber())
@@ -69,6 +100,7 @@ const ProgressBar = ({
       setPlaying(prevPlaying => !prevPlaying);
     }
   }
+
   return (
     <div className="absolute top-0 left-0 right-0 flex bg-gray-700">
       <input 
