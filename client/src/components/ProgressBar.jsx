@@ -3,16 +3,12 @@ import Big from 'big.js';
 
 const ProgressBar = ({ 
   track, 
-  trackList,
   playing, 
-  setPlaying,
   progressState,
   setProgressState,
   nextTrack,
   player
 }) => {
-  // const [progressState, setProgressState] = useState('0%');
-  // transition is turned off for now, this is a last fix
   const [transition, setTransition] = useState(false);
 
   let progressSave = useRef('0%');
@@ -20,12 +16,7 @@ const ProgressBar = ({
   let duration = useRef(0);
 
   useEffect(() => {
-    // console.log('TRACK:', track)
-    // console.log('td', track?.duration)
-  }, [])
-
-  useEffect(() => {
-    // setTransition(true);
+    setTransition(true);
     setProgressState(progressSave);
 
     const interval = setInterval(updateProgress, 500);
@@ -43,7 +34,7 @@ const ProgressBar = ({
     timePassed.current = new Big(0);
     duration.current = track.duration;
 
-    // setTransition(false);
+    setTransition(false);
     setProgressState('0%');
 
     console.log('TRACK:', track)
@@ -51,13 +42,10 @@ const ProgressBar = ({
   }, [track])
 
   const updateProgress = () => {
-    // const percentage =?.duration ? timePassed.current.plus(500).div?.duration) : new Big(0); // prevent division by 0
+    // Check to make sure transition is on, if not, turn on
+    !transition && setTransition(true);
 
-    // Always have transition on when progressbar is active
-    // !transition && setTransition(true);
-
-    // const percentage = timePassed.current.plus(500).div(track?.duration); // prevent division by 0
-    const percentage = timePassed.current.plus(500).div(duration.current); // prevent division by 0
+    const percentage = timePassed.current.plus(500).div(duration.current);
     const progressStr = percentage.times(100).toString() + '%';
 
     timePassed.current = timePassed.current.plus(500);
@@ -66,17 +54,16 @@ const ProgressBar = ({
     endOfTrackCheck();
   }
 
-  const selectProgress = (input) => { // value is between 0-200
+  const selectProgress = (input) => { // input value is between 0-200
     const value = new Big(input);
     const percentage = value.div(2).toFixed(1);
 
-    // const newPosition = new Big(track?.duration).times(new Big(percentage).div(100));
     const newPosition = new Big(duration.current).times(new Big(percentage).div(100));
 
     progressSave.current = percentage + '%';
     timePassed.current = newPosition;
 
-    // setTransition(false); // this does not cancel transition after song ends
+    setTransition(false);
     setProgressState(percentage + '%');
 
     // Seek new position in track
@@ -85,21 +72,10 @@ const ProgressBar = ({
   }
 
   const endOfTrackCheck = () => {
-    // Don't stop playing if track is NOT last item in trackList
-    // if (track.id !== trackList[trackList.length - 1]?.id) return;
-
-    // Stop playing when track ends
-    // if (timePassed.current.gte(track?.duration)) {
+    // Run nextTrack when progress bar in full
+    // Conditional pause logic is inside nextTrack()
     if (timePassed.current.gte(duration.current)) {
-      // setPlaying(prevPlaying => !prevPlaying);
-
-      // Play next track when progress bar in full
-      // Conditional logic is inside nextTrack function
-      // setTransition(false);
       nextTrack(); 
-
-      // Prevents infinite nextTrack bug
-      timePassed.current = new Big(0);
     }
   }
 
