@@ -16,11 +16,14 @@ const MusicBar = ({ item }) => {
   const [playing, setPlaying] = useState(false);
   const [trackInfo, setTrackInfo] = useState();
   const [trackList, setTrackList] = useState([]);
-  const [duration, setDuration] = useState();
+  // const [trackIndex, setTrackIndex] = useState(0);
   const [globalDeviceID, setGlobalDeviceID] = useState();
+  const [progressState, setProgressState] = useState('0%');
   const [display, setDisplay] = useState(false);
 
+  // State that need to persist between renders
   let player = useRef();
+  // let trackIndex = useRef(0);
 
   const spotifyApi = new SpotifyWebApi({
     clientId: '11c9d0da629948fb87a800307b571162',
@@ -151,6 +154,8 @@ const MusicBar = ({ item }) => {
     if (!trackInfo) return;
     if (!player.current) return;
 
+    // Reset track index for trackList
+    // trackIndex.current = 0;
 
     // Play track once trackInfo and trackList is set
     playTrack({
@@ -160,7 +165,6 @@ const MusicBar = ({ item }) => {
     });
 
     setDisplay(true); 
-
   }, [trackList]) // Only run when new trackList is changed
 
   // Play track from spotify Web API
@@ -181,14 +185,10 @@ const MusicBar = ({ item }) => {
       ? { uris: [spotify_uri] } 
       : { context_uri: spotify_uri }
 
-    // Use deviceID from state if not passed as an argument
-    // const device_id = deviceID ? deviceID : globalDeviceID;
-
     setPlaying(true);
     getOAuthToken(access_token => {
       fetch(`https://api.spotify.com/v1/me/player/play?device_id=${globalDeviceID}`, {
         method: 'PUT',
-        // body: JSON.stringify(options),
         body: JSON.stringify(options),
         headers: {
           'Content-Type': 'application/json',
@@ -197,7 +197,6 @@ const MusicBar = ({ item }) => {
       });
     });
   };
-
 
   // Track navigation controls 
 
@@ -210,26 +209,41 @@ const MusicBar = ({ item }) => {
   const prevTrack = () => {
     const index = trackList.findIndex(track => trackInfo.id === track.id) - 1;
 
+
     // If track not first in trackList play previous track
     if (index >= 0) {
       setTrackInfo(trackList[index]);
       player.current.previousTrack()
     } else { // else pause track and go to start
       player.current.pause();
-      setDuration('min');
+      setPlaying(false);
+      setProgressState('0%');
     }
   }
 
   const nextTrack = () => {
     const index = trackList.findIndex(track => trackInfo.id === track.id) + 1;
 
+    // music player is one song ahead of trackInfo WHYYYYY??????????
+    // console.log(trackIndex.current)
+
+    // trackIndex.current = trackIndex.current;
+
     // If track not last in trackList play next track
+    // if (trackIndex.current < trackList.length) {
     if (index < trackList.length) {
+      // console.log("NEXT TRACK: ", trackList[index]) // <-- index is the problem! "NEXT TRACK" is still the same track
+      // console.log("NEXT TRACK: ", trackList[trackIndex.current]) 
+      // console.log("trackIndex", trackIndex.current)
+      // console.log("index", index)
+
+      // setTrackInfo(trackList[trackIndex.current]);
       setTrackInfo(trackList[index]);
-      player.current.nextTrack()
+      player.current.nextTrack();
     } else { // else pause track and go to end
       player.current.pause();
-      setDuration('max');
+      setPlaying(false);
+      setProgressState('100%');
     }
   }
 
@@ -238,9 +252,11 @@ const MusicBar = ({ item }) => {
       <ProgressBar 
         track={trackInfo} 
         trackList={trackList}
-        duration={duration}
         playing={playing} 
         setPlaying={setPlaying}
+        progressState={progressState}
+        setProgressState={setProgressState}
+        nextTrack={nextTrack}
         player={player.current} /> 
       <img className="w-16 h-14" src={trackInfo?.albumCoverSM} alt={trackInfo?.name} />
       <div className="px-6 text-center">

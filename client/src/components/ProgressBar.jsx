@@ -6,14 +6,18 @@ const ProgressBar = ({
   trackList,
   playing, 
   setPlaying,
-  duration,
+  progressState,
+  setProgressState,
+  nextTrack,
   player
 }) => {
-  const [progressState, setProgressState] = useState('0%');
-  const [transition, setTransition] = useState(true);
+  // const [progressState, setProgressState] = useState('0%');
+  // transition is turned off for now, this is a last fix
+  const [transition, setTransition] = useState(false);
 
   let progressSave = useRef('0%');
   let timePassed = useRef(new Big(0));
+  let duration = useRef(0);
 
   useEffect(() => {
     // console.log('TRACK:', track)
@@ -21,7 +25,7 @@ const ProgressBar = ({
   }, [])
 
   useEffect(() => {
-    setTransition(true);
+    // setTransition(true);
     setProgressState(progressSave);
 
     const interval = setInterval(updateProgress, 500);
@@ -35,37 +39,25 @@ const ProgressBar = ({
 
   // Reset everything when changing track
   useEffect(() => {
-    // setTransition(false);
     progressSave.current = '0%';
     timePassed.current = new Big(0);
+    duration.current = track.duration;
+
+    // setTransition(false);
     setProgressState('0%');
 
     console.log('TRACK:', track)
     console.log('td', track?.duration)
   }, [track])
 
-  useEffect(() => {
-    switch (duration) {
-      case 'max':
-        setPlaying(false);
-        setProgressState('100%')
-        break;
-
-      case 'min':
-        setPlaying(false);
-        setProgressState('0%')
-        break;
-
-      default:
-        // if duration === 100%, nextTrack()
-        // this fixes auto pause when album ends
-        // and could potentially fix progress selection bug
-    }
-  }, [duration])
-
   const updateProgress = () => {
     // const percentage =?.duration ? timePassed.current.plus(500).div?.duration) : new Big(0); // prevent division by 0
-    const percentage = timePassed.current.plus(500).div(track?.duration); // prevent division by 0
+
+    // Always have transition on when progressbar is active
+    // !transition && setTransition(true);
+
+    // const percentage = timePassed.current.plus(500).div(track?.duration); // prevent division by 0
+    const percentage = timePassed.current.plus(500).div(duration.current); // prevent division by 0
     const progressStr = percentage.times(100).toString() + '%';
 
     timePassed.current = timePassed.current.plus(500);
@@ -78,12 +70,13 @@ const ProgressBar = ({
     const value = new Big(input);
     const percentage = value.div(2).toFixed(1);
 
-    const newPosition = new Big(track?.duration).times(new Big(percentage).div(100));
+    // const newPosition = new Big(track?.duration).times(new Big(percentage).div(100));
+    const newPosition = new Big(duration.current).times(new Big(percentage).div(100));
 
     progressSave.current = percentage + '%';
     timePassed.current = newPosition;
 
-    setTransition(false);
+    // setTransition(false); // this does not cancel transition after song ends
     setProgressState(percentage + '%');
 
     // Seek new position in track
@@ -93,18 +86,27 @@ const ProgressBar = ({
 
   const endOfTrackCheck = () => {
     // Don't stop playing if track is NOT last item in trackList
-    if (track.id !== trackList[trackList.length - 1]?.id) return;
+    // if (track.id !== trackList[trackList.length - 1]?.id) return;
 
     // Stop playing when track ends
-    if (timePassed.current.gte(track?.duration)) {
-      setPlaying(prevPlaying => !prevPlaying);
+    // if (timePassed.current.gte(track?.duration)) {
+    if (timePassed.current.gte(duration.current)) {
+      // setPlaying(prevPlaying => !prevPlaying);
+
+      // Play next track when progress bar in full
+      // Conditional logic is inside nextTrack function
+      // setTransition(false);
+      nextTrack(); 
+
+      // Prevents infinite nextTrack bug
+      timePassed.current = new Big(0);
     }
   }
 
   return (
     <div className="absolute top-0 left-0 right-0 flex bg-gray-700">
       <input 
-        type="range" 
+        type="range"
         id="progressSelector" 
         min="0" 
         max="200" 
