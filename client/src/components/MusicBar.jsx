@@ -123,7 +123,7 @@ const MusicBar = ({ item }) => {
         break;
 
       default:
-        console.log('[ERROR] item.type not indentified');
+        console.log('[ERROR] Unknown item type');
         console.log('item.type: ', item.type);
     }
   }, [item])
@@ -181,9 +181,6 @@ const MusicBar = ({ item }) => {
     const index = trackIndex.current - 1;
     trackIndex.current = trackIndex.current - 1;
 
-    console.log(index)
-
-
     // If track not first in trackList play previous track
     if (index >= 0) {
       playTrack({
@@ -192,11 +189,13 @@ const MusicBar = ({ item }) => {
       });
 
       setTrackInfo(trackList[index]);
-      // player.current.previousTrack()
-    } else { // else pause track and go to start
-      player.current.pause();
-      setPlaying(false);
-      setProgressState('0%');
+    } else { // else restart first track 
+      playTrack({
+        spotify_uri: trackList[0].uri,
+        playerInstance: player.current 
+      });
+
+      setTrackInfo(trackList[0]);
     }
   }
 
@@ -209,16 +208,12 @@ const MusicBar = ({ item }) => {
 
     // If track not last in trackList play next track
     if (index < trackList.length) {
-      console.log("NEXT TRACK: ", trackList[index]) 
-      console.log("trackIndex", index)
-
       playTrack({
         spotify_uri: trackList[index].uri,
         playerInstance: player.current 
       });
 
       setTrackInfo(trackList[index]);
-      // player.current.nextTrack();
     } else { // else pause track and go to end
       player.current.pause();
       setPlaying(false);
