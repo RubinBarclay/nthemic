@@ -9,6 +9,7 @@ import {
 
 import Home from './Home';
 import Search from './Search';
+import Settings from './Settings';
 import Sidenav from '../components/Sidenav';
 import MusicBar from '../components/MusicBar';
 
@@ -30,8 +31,8 @@ const Nthemic = ({ code }) => {
           <Switch>
             <Route exact path="/" render={() => <Home play={setCurrentItem} />} />
             <Route path="/search" render={() => <Search play={setCurrentItem} />} />
+            <Route path="/settings" component={Settings} />
           </Switch>
-          {/* currentItem ? <MusicBar item={currentItem} /> : null */}
           <MusicBar item={currentItem} />
         </div>
       </AuthCodeContext.Provider>
