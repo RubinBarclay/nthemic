@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import AuthCodeContext from '../context/AuthCodeContext';
 import ProgressBar from '../components/ProgressBar';
 import SpotifyWebApi from 'spotify-web-api-node';
@@ -6,7 +6,9 @@ import {
   PlayIcon, 
   PauseIcon, 
   RewindIcon, 
-  FastForwardIcon 
+  FastForwardIcon,
+  VolumeUpIcon,
+  VolumeOffIcon
 } from '@heroicons/react/solid'
 
 const MusicBar = ({ item }) => {
@@ -18,6 +20,8 @@ const MusicBar = ({ item }) => {
   const [trackList, setTrackList] = useState([]);
   const [globalDeviceID, setGlobalDeviceID] = useState();
   const [progressState, setProgressState] = useState('0%');
+  const [volume, setVolume] = useState(25);
+  const [muted, setMuted] = useState(false);
   const [display, setDisplay] = useState(false);
 
   // State that need to persist between renders
@@ -221,6 +225,23 @@ const MusicBar = ({ item }) => {
     }
   }
 
+  const volumeHandler = (e) => {
+    setVolume(volume => {
+      // increment and decrement volume by 5 depending on scroll direction
+      // and if newVolume is greater than 100 return 100, same goes for 0
+      let newVolume = e.deltaY < 0 ? volume + 5 : volume - 5;
+      newVolume = newVolume > 100 ? 100 : newVolume < 0 ? 0 : newVolume;
+
+      player.current.setVolume(newVolume / 100);
+      return newVolume;
+    })
+  }
+
+  const volumeMuteHandler = () => {
+    player.current.setVolume(!muted ? 0 : volume / 100);
+    setMuted(muted => !muted);
+  }
+
   return display ? (
     <div className="relative flex items-center justify-center w-screen h-20 bg-gray-900">
       <ProgressBar 
@@ -233,7 +254,7 @@ const MusicBar = ({ item }) => {
         nextTrack={nextTrack}
         player={player.current} /> 
       <img className="w-16 h-14" src={trackInfo?.albumCoverSM} alt={trackInfo?.name} />
-      <div className="px-6 text-center">
+      <div className="px-5 text-center">
         <p>{trackInfo?.name}</p>
         <p className="text-sm text-gray-400">{trackInfo?.artist}</p>
       </div>
@@ -242,6 +263,16 @@ const MusicBar = ({ item }) => {
         { playing ? <PauseIcon className="w-10 h-10" /> : <PlayIcon className="w-10 h-10" /> }
       </div>
       <FastForwardIcon className="w-8 h-8" onClick={nextTrack} />
+      <div className="relative m-4" onWheel={volumeHandler} onClick={volumeMuteHandler}>
+        {
+          muted ? <VolumeOffIcon className="w-6 h-6" /> : (
+            <Fragment>
+              <VolumeUpIcon className="w-6 h-6" />
+              <span className="absolute text-gray-400 left-full top-1/2 transform translate-x-2 -translate-y-1/2">{volume}%</span>
+            </Fragment>
+          ) 
+        }
+      </div>
     </div>
   ) : null
 }
