@@ -2,6 +2,7 @@ import React, { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import AuthCodeContext from '../context/AuthCodeContext';
 import ProgressBar from '../components/ProgressBar';
 import SpotifyWebApi from 'spotify-web-api-node';
+import { Link } from 'react-router-dom';
 import { 
   PlayIcon, 
   PauseIcon, 
@@ -77,7 +78,7 @@ const MusicBar = ({ item }) => {
         break;
 
       case 'album':
-        spotifyApi.getAlbumTracks(item.id)
+        spotifyApi.getAlbumTracks(item.collectionID, { limit: 20 })
           .then(data => {
             const extractTrackInfo = (track) => ({
               ...item,
@@ -100,7 +101,7 @@ const MusicBar = ({ item }) => {
         break;
 
       case 'playlist':
-        spotifyApi.getPlaylistTracks(item.id)
+        spotifyApi.getPlaylistTracks(item.collectionID, { limit: 20 })
           .then(data => {
             const extractTrackInfo = (track) => ({
               ...item,
@@ -253,10 +254,21 @@ const MusicBar = ({ item }) => {
         setProgressState={setProgressState}
         nextTrack={nextTrack}
         player={player.current} /> 
-      <img className="w-16 h-14" src={trackInfo?.albumCoverSM} alt={trackInfo?.name} />
+
+      <Link to={`/collection/${trackInfo.type}/${trackInfo.collectionID}`}>
+        <img 
+          className="w-16 cursor-pointer h-14" 
+          src={trackInfo?.albumCoverSM} 
+          alt={trackInfo?.name} />
+      </Link>
+
       <div className="px-5 text-center">
-        <p>{trackInfo?.name}</p>
-        <p className="text-sm text-gray-400">{trackInfo?.artist}</p>
+      <Link 
+        className="hover:underline"
+        to={`/collection/${trackInfo.type}/${trackInfo.collectionID}`}>
+        {trackInfo.name}
+      </Link>
+      <p className="text-sm text-gray-400">{trackInfo.artist}</p>
       </div>
       <RewindIcon className="w-8 h-8" onClick={prevTrack}/>
       <div onClick={togglePlay}>

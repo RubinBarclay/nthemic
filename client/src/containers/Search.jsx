@@ -39,7 +39,7 @@ const Search = ({ play }) => {
   }, [search, accessToken])
 
   return (
-    <div className="overflow-y-scroll scrollbar-hide col-span-8 grid-cols-12">
+    <div className="w-full h-full">
       <SearchField setSearch={setSearch} />
       <SearchResults type="Songs" results={searchResults} play={play} />
       {/* <SearchResults type="Artists" />

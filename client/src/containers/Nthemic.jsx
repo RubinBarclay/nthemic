@@ -10,6 +10,7 @@ import {
 import Home from './Home';
 import Search from './Search';
 import Settings from './Settings';
+import Collection from './Collection';
 import Sidenav from '../components/Sidenav';
 import MusicBar from '../components/MusicBar';
 
@@ -28,11 +29,14 @@ const Nthemic = ({ code }) => {
       <AuthCodeContext.Provider value={accessToken}>
         <div className="h-screen font-sans text-gray-200 bg-gray-900 grid-rows-custom grid grid-cols-10">
           <Sidenav />
-          <Switch>
-            <Route exact path="/" render={() => <Home play={setCurrentItem} />} />
-            <Route path="/search" render={() => <Search play={setCurrentItem} />} />
-            <Route path="/settings" component={Settings} />
-          </Switch>
+          <div className="overflow-y-scroll scrollbar-hide col-span-8 grid-cols-12">
+            <Switch>
+              <Route exact path="/" render={() => <Home play={setCurrentItem} />} />
+              <Route path="/search" render={() => <Search play={setCurrentItem} />} />
+              <Route path="/settings" component={Settings} />
+              <Route path="/collection/:type/:id" component={Collection} />
+            </Switch>
+          </div>
           <MusicBar item={currentItem} />
         </div>
       </AuthCodeContext.Provider>

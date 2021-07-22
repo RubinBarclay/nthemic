@@ -13,10 +13,10 @@ const FeaturedBar = ({ title, items, play }) => {
           {
             items.map(item => (
               <img 
-                key={item.id} 
                 src={item.albumCoverLG} 
                 alt={item.name} 
                 onClick={() => play(item)}
+                key={item?.id ? item.id : item.collectionID} 
                 className="flex-shrink-0 w-48 h-48 mr-4" role="listitem" />
             ))
           }
