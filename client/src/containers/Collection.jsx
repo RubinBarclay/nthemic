@@ -6,7 +6,7 @@ import SpotifyWebApi from 'spotify-web-api-node';
 import { ClockIcon } from '@heroicons/react/outline';
 import { PlayIcon } from '@heroicons/react/solid';
 
-const Collection = () => {
+const Collection = ({ play }) => {
   const { id, type } = useParams();
   const [collectionInfo, setCollectionInfo] = useState();
   const [hover, setHover] = useState(false);
@@ -20,7 +20,7 @@ const Collection = () => {
     if (!accessToken) return;
 
     spotifyApi.setAccessToken(accessToken);
-    if (type === 'album') {
+    if (type === 'album' || type === 'track') {
       spotifyApi.getAlbum(id).then(data => {
         console.log(data.body)
         setCollectionInfo({
@@ -28,15 +28,18 @@ const Collection = () => {
           collectionID: id,
           name: data.body.name,
           author: data.body.artists[0].name,
-          albumCoverLG: album.images[1].url,
-          albumCoverSM: album.images[2].url,
+          albumCoverLG: data.body.images[1].url,
           tracks: data.body.tracks.items.map(track => ({
+            type: type,
+            collectionID: id,
             id: track.id,
             uri: track.uri,
             name: track.name,
             album: data.body.name,
             artist: track.artists[0].name,
             duration: track.duration_ms,
+            albumCoverLG: data.body.images[1].url,
+            albumCoverSM: data.body.images[2].url,
           }))
         })
       })
@@ -51,6 +54,8 @@ const Collection = () => {
           author: data.body.owner.display_name,
           albumCoverLG: data.body.images[0].url,
           tracks: data.body.tracks.items.slice(0, 20).map(track => ({
+            type: type,
+            collectionID: id,
             id: track.track.id,
             uri: track.track.uri,
             name: track.track.name,
@@ -68,11 +73,14 @@ const Collection = () => {
   return collectionInfo ? (
     <div className="w-full h-full px-48 pt-32">
       <div className="flex items-center h-1/3">
-        <img className="h-auto w-72"src={collectionInfo.albumCoverLG} alt={collectionInfo.name} />
+        <img className="w-64 h-auto"src={collectionInfo.albumCoverLG} alt={collectionInfo.name} />
         <div className="pl-6">
           <h1 className="text-5xl">{collectionInfo.name}</h1>
           <h2 className="py-2 text-xl text-gray-400">By: {collectionInfo.author}</h2>
         </div>
+        <button 
+          className="px-6 py-3 ml-auto mr-16 text-xl border-2 border-gray-200 rounded-full whitespace-nowrap" 
+          onClick={() => play(collectionInfo)}>Play now</button>
       </div>
 
       <table className="w-full mt-8 text-lg text-center">
@@ -87,6 +95,8 @@ const Collection = () => {
           {
             collectionInfo.tracks.map((track, index) => (
               <tr 
+                key={track.id}
+                onClick={() => play(track, index)}
                 onMouseOver={() => setHover(true)}
                 onMouseOut={() => setHover(false)}
                 className="border border-t-4 border-b-4 border-transparent">

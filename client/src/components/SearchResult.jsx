@@ -10,7 +10,7 @@ const SearchResult = ({ play, track}) => {
       className="flex items-center my-2 cursor-pointer" 
       onMouseOver={() => setHover(true)} 
       onMouseOut={() => setHover(false)} 
-      onClick={() => play(track)}>
+      onClick={() => play(track, track.index)}>
       <div className="relative">
         <img className="w-20 h-auto bg-red-500" src={track.albumCoverSM} alt={track.name} />
         <div className={`absolute inset-0 flex justify-center bg-black bg-opacity-50 opacity-${hover ? 100 : 0} transition-opacity`}>

@@ -18,7 +18,13 @@ const Nthemic = ({ code }) => {
   const accessToken = useAuth(code);
 
   // Item can be a track, album or playlist
-  const [currentItem, setCurrentItem] = useState();
+  // item is an object, { item: (item), index: (index) }
+  // Index being track position in album or playlist
+  const [currentItem, setCurrentItem] = useState({ item: null, index: null });
+
+  const play = (item, index = 0) => {
+    setCurrentItem({ item: item, index: index })
+  }
 
   useEffect(() => {
     console.log('CurrentItem: ', currentItem)
@@ -31,13 +37,13 @@ const Nthemic = ({ code }) => {
           <Sidenav />
           <div className="overflow-y-scroll scrollbar-hide col-span-8 grid-cols-12">
             <Switch>
-              <Route exact path="/" render={() => <Home play={setCurrentItem} />} />
-              <Route path="/search" render={() => <Search play={setCurrentItem} />} />
+              <Route exact path="/" render={() => <Home play={play} />} />
+              <Route path="/search" render={() => <Search play={play} />} />
               <Route path="/settings" component={Settings} />
-              <Route path="/collection/:type/:id" component={Collection} />
+              <Route path="/collection/:type/:id" component={() => <Collection play={play} />} />
             </Switch>
           </div>
-          <MusicBar item={currentItem} />
+          <MusicBar currentItem={currentItem} />
         </div>
       </AuthCodeContext.Provider>
     </Router>

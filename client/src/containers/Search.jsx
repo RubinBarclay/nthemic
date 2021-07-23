@@ -28,7 +28,9 @@ const Search = ({ play }) => {
         uri: track.uri,
         name: track.name,
         type: track.type,
+        collectionID: track.album.id,
         artist: track.artists[0].name,
+        index: track.track_number - 1,
         albumCoverLG: track.album.images[2].url,
         albumCoverSM: track.album.images[2].url,
         duration: track.duration_ms

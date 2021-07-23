@@ -12,7 +12,7 @@ import {
   VolumeOffIcon
 } from '@heroicons/react/solid'
 
-const MusicBar = ({ item }) => {
+const MusicBar = ({ currentItem: { item, index } }) => {
 
   const accessToken = useContext(AuthCodeContext);
 
@@ -72,11 +72,12 @@ const MusicBar = ({ item }) => {
     spotifyApi.setAccessToken(accessToken);
 
     switch (item.type) {
-      case 'track':
-        setTrackInfo(item);
-        setTrackList([item]);
-        break;
+      // case 'track':
+      //   setTrackInfo(item);
+      //   setTrackList([item]);
+      //   break;
 
+      case 'track':
       case 'album':
         spotifyApi.getAlbumTracks(item.collectionID, { limit: 20 })
           .then(data => {
@@ -91,8 +92,8 @@ const MusicBar = ({ item }) => {
             console.log(data.body.items.map(extractTrackInfo))
             console.log(data.body.items[0])
 
-            // Set info for first track
-            setTrackInfo(extractTrackInfo(data.body.items[0]));
+            // Set info for chosen track
+            setTrackInfo(extractTrackInfo(data.body.items[index]));
 
             // Add all tracks in album to array
             setTrackList(data.body.items.map(extractTrackInfo));
@@ -118,8 +119,8 @@ const MusicBar = ({ item }) => {
             console.log(data.body.items.map(extractTrackInfo))
             console.log(data.body.items[0])
 
-            // Set info for first track
-            setTrackInfo(extractTrackInfo(data.body.items[0]));
+            // Set info for chosen track
+            setTrackInfo(extractTrackInfo(data.body.items[index]));
 
             // Add all tracks in playlist to array
             setTrackList(data.body.items.map(extractTrackInfo));
@@ -139,7 +140,7 @@ const MusicBar = ({ item }) => {
     if (!player.current) return;
 
     // Reset track index for trackList
-    trackIndex.current = 0;
+    trackIndex.current = index;
 
     // Play track once trackInfo and trackList is set
     playTrack({

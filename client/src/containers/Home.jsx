@@ -33,6 +33,7 @@ const Home = ({ play }) => {
           album: track.album.name,
           collectionID: track.album.id,
           artist: track.artists[0].name,
+          index: track.track_number - 1,
           albumCoverLG: track.album.images[1].url,
           albumCoverSM: track.album.images[2].url,
           duration: track.duration_ms
