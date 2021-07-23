@@ -5,12 +5,21 @@ import displayDuration from '../utilities/displayDuration';
 const SearchResult = ({ play, track}) => {
   const [hover, setHover] = useState(false);
 
+  const durationText = () => {
+    if (track.type === 'track') {
+      return displayDuration(track.duration); 
+    } else {
+      let capitalFirst = track.albumType.charAt(0).toUpperCase();
+      return capitalFirst + track.albumType.slice(1);
+    }
+  }
+
   return (
     <div 
       className="flex items-center my-2 cursor-pointer" 
       onMouseOver={() => setHover(true)} 
       onMouseOut={() => setHover(false)} 
-      onClick={() => play(track, track.index)}>
+      onClick={() => play(track, track?.index)}>
       <div className="relative">
         <img className="w-20 h-auto bg-red-500" src={track.albumCoverSM} alt={track.name} />
         <div className={`absolute inset-0 flex justify-center bg-black bg-opacity-50 opacity-${hover ? 100 : 0} transition-opacity`}>
@@ -21,7 +30,7 @@ const SearchResult = ({ play, track}) => {
         <p className="text-xl">{track.name}</p>
         <p className="text-lg text-gray-400">{track.artist}</p>
       </div>
-      <span className="px-2 ml-auto text-lg">{displayDuration(track.duration)}</span>
+      <span className="w-16 ml-auto text-lg text-center text-gray-200">{durationText()}</span>
     </div>
   )
 }

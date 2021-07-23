@@ -7,23 +7,29 @@ import AuthCodeContext from '../context/AuthCodeContext';
 const Search = ({ play }) => {
   const accessToken = useContext(AuthCodeContext);
   const [search, setSearch] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [trackResults, setTrackResults] = useState([]);
+  const [albumResults, setAlbumResults] = useState([]);
 
   const spotifyApi = new SpotifyWebApi({
     clientId: '11c9d0da629948fb87a800307b571162',
   })
 
+  const reset = () => {
+    setTrackResults([]);
+    setAlbumResults([]);
+  }
+
   useEffect(() => {
-    if (!search) return setSearchResults([]);
+    if (!search) return reset();
     if (!accessToken) return;
 
     spotifyApi.setAccessToken(accessToken);
 
     let cancel = false;
-    spotifyApi.searchTracks(search).then(data => {
-      console.log(data.body.tracks.items[0]);
+    spotifyApi.searchTracks(search, { limit: 6 }).then(data => {
+      // console.log(data.body.tracks.items[0]);
       if (cancel) return;
-      setSearchResults(data.body.tracks.items.map(track => ({
+      setTrackResults(data.body.tracks.items.map(track => ({
         id: track.id,
         uri: track.uri,
         name: track.name,
@@ -37,15 +43,30 @@ const Search = ({ play }) => {
       })))
     })
 
+    spotifyApi.searchAlbums(search, { limit: 6 }).then(data => {
+      console.log(data.body);
+      if (cancel) return;
+      setAlbumResults(data.body.albums.items.map(album => ({
+        id: album.id,
+        uri: album.uri,
+        type: album.type,
+        name: album.name,
+        artist: album.artists[0].name,
+        collectionID: album.id,
+        albumCoverSM: album.images[2].url,
+        albumType: album.album_type,
+      })))
+    })
+
     return () => cancel = true;
   }, [search, accessToken])
 
   return (
     <div className="w-full h-full">
       <SearchField setSearch={setSearch} />
-      <SearchResults type="Songs" results={searchResults} play={play} />
-      {/* <SearchResults type="Artists" />
-      <SearchResults type="Playlists" /> */}
+      <SearchResults type="Songs" results={trackResults} play={play} />
+      <SearchResults type="Albums" results={albumResults} play={play} />
+      {/* <SearchResults type="Artists" /> */}
     </div>
   )
 }
