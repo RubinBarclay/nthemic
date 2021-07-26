@@ -99,7 +99,7 @@ const Collection = ({ play }) => {
                 onClick={() => play(track, index)}
                 onMouseOver={() => setHover(true)}
                 onMouseOut={() => setHover(false)}
-                className="border border-t-4 border-b-4 border-transparent">
+                className="h-4 border border-t-4 border-b-4 border-transparent">
                 <td>{hover ? <PlayIcon className="w-5 h-auto mx-auto" /> : index + 1}</td>
                 <td className="pl-2 text-left">{track.name}</td>
                 <td>{displayDuration(track.duration)}</td>

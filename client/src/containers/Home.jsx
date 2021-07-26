@@ -79,7 +79,7 @@ const Home = ({ play }) => {
   }, [accessToken])
 
   return featuredPlaylist ? (
-    <div className="w-full h-full border-b border-gray-700">
+    <div className="w-full h-full">
       <Header playlist={featuredPlaylist} play={play} />
       <div className="p-4">
         <FeaturedBar title="Your Top Tracks" items={topTracks} play={play} />
