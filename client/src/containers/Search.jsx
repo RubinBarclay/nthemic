@@ -9,6 +9,7 @@ const Search = ({ play }) => {
   const [search, setSearch] = useState('');
   const [trackResults, setTrackResults] = useState([]);
   const [albumResults, setAlbumResults] = useState([]);
+  const [playlistResults, setPlaylistResults] = useState([]);
 
   const spotifyApi = new SpotifyWebApi({
     clientId: '11c9d0da629948fb87a800307b571162',
@@ -17,15 +18,16 @@ const Search = ({ play }) => {
   const reset = () => {
     setTrackResults([]);
     setAlbumResults([]);
+    setPlaylistResults([]);
   }
 
   useEffect(() => {
     if (!search) return reset();
     if (!accessToken) return;
 
+    let cancel = false;
     spotifyApi.setAccessToken(accessToken);
 
-    let cancel = false;
     spotifyApi.searchTracks(search, { limit: 6 }).then(data => {
       // console.log(data.body.tracks.items[0]);
       if (cancel) return;
@@ -58,6 +60,19 @@ const Search = ({ play }) => {
       })))
     })
 
+    spotifyApi.searchPlaylists(search, { limit: 6 }).then(data => {
+      console.log(data.body);
+      if (cancel) return;
+      setPlaylistResults(data.body.playlists.items.map(playlist => ({
+        id: playlist.id,
+        uri: playlist.uri,
+        type: playlist.type,
+        name: playlist.name,
+        collectionID: playlist.id,
+        albumCoverSM: playlist.images[0].url,
+      })))
+    })
+    
     return () => cancel = true;
   }, [search, accessToken])
 
@@ -66,7 +81,7 @@ const Search = ({ play }) => {
       <SearchField setSearch={setSearch} />
       <SearchResults type="Songs" results={trackResults} play={play} />
       <SearchResults type="Albums" results={albumResults} play={play} />
-      {/* <SearchResults type="Artists" /> */}
+      <SearchResults type="Playlists" results={playlistResults} play={play} />
     </div>
   )
 }
