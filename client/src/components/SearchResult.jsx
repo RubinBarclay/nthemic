@@ -6,11 +6,16 @@ const SearchResult = ({ play, track}) => {
   const [hover, setHover] = useState(false);
 
   const durationText = () => {
-    if (track.type === 'track') {
-      return displayDuration(track.duration); 
-    } else {
-      let capitalFirst = track.albumType.charAt(0).toUpperCase();
-      return capitalFirst + track.albumType.slice(1);
+    switch (track.type) {
+      case 'track':
+        return displayDuration(track.duration); 
+      case 'album':
+        let capitalFirst = track.albumType.charAt(0).toUpperCase();
+        return capitalFirst + track.albumType.slice(1);
+      case 'playlist':
+        return '';
+      default:
+        throw 'Unknown track type!';
     }
   }
 
