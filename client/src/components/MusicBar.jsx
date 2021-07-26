@@ -2,6 +2,7 @@ import React, { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import AuthCodeContext from '../context/AuthCodeContext';
 import ProgressBar from '../components/ProgressBar';
 import SpotifyWebApi from 'spotify-web-api-node';
+import { Link } from 'react-router-dom';
 import { 
   PlayIcon, 
   PauseIcon, 
@@ -11,7 +12,7 @@ import {
   VolumeOffIcon
 } from '@heroicons/react/solid'
 
-const MusicBar = ({ item }) => {
+const MusicBar = ({ currentItem: { item, index } }) => {
 
   const accessToken = useContext(AuthCodeContext);
 
@@ -71,13 +72,14 @@ const MusicBar = ({ item }) => {
     spotifyApi.setAccessToken(accessToken);
 
     switch (item.type) {
-      case 'track':
-        setTrackInfo(item);
-        setTrackList([item]);
-        break;
+      // case 'track':
+      //   setTrackInfo(item);
+      //   setTrackList([item]);
+      //   break;
 
+      case 'track':
       case 'album':
-        spotifyApi.getAlbumTracks(item.id)
+        spotifyApi.getAlbumTracks(item.collectionID, { limit: 20 })
           .then(data => {
             const extractTrackInfo = (track) => ({
               ...item,
@@ -90,8 +92,8 @@ const MusicBar = ({ item }) => {
             console.log(data.body.items.map(extractTrackInfo))
             console.log(data.body.items[0])
 
-            // Set info for first track
-            setTrackInfo(extractTrackInfo(data.body.items[0]));
+            // Set info for chosen track
+            setTrackInfo(extractTrackInfo(data.body.items[index]));
 
             // Add all tracks in album to array
             setTrackList(data.body.items.map(extractTrackInfo));
@@ -100,7 +102,7 @@ const MusicBar = ({ item }) => {
         break;
 
       case 'playlist':
-        spotifyApi.getPlaylistTracks(item.id)
+        spotifyApi.getPlaylistTracks(item.collectionID, { limit: 20 })
           .then(data => {
             const extractTrackInfo = (track) => ({
               ...item,
@@ -117,8 +119,8 @@ const MusicBar = ({ item }) => {
             console.log(data.body.items.map(extractTrackInfo))
             console.log(data.body.items[0])
 
-            // Set info for first track
-            setTrackInfo(extractTrackInfo(data.body.items[0]));
+            // Set info for chosen track
+            setTrackInfo(extractTrackInfo(data.body.items[index]));
 
             // Add all tracks in playlist to array
             setTrackList(data.body.items.map(extractTrackInfo));
@@ -138,7 +140,7 @@ const MusicBar = ({ item }) => {
     if (!player.current) return;
 
     // Reset track index for trackList
-    trackIndex.current = 0;
+    trackIndex.current = index;
 
     // Play track once trackInfo and trackList is set
     playTrack({
@@ -253,10 +255,21 @@ const MusicBar = ({ item }) => {
         setProgressState={setProgressState}
         nextTrack={nextTrack}
         player={player.current} /> 
-      <img className="w-16 h-14" src={trackInfo?.albumCoverSM} alt={trackInfo?.name} />
+
+      <Link to={`/collection/${trackInfo.type}/${trackInfo.collectionID}`}>
+        <img 
+          className="w-16 cursor-pointer h-14" 
+          src={trackInfo?.albumCoverSM} 
+          alt={trackInfo?.name} />
+      </Link>
+
       <div className="px-5 text-center">
-        <p>{trackInfo?.name}</p>
-        <p className="text-sm text-gray-400">{trackInfo?.artist}</p>
+      <Link 
+        className="hover:underline"
+        to={`/collection/${trackInfo.type}/${trackInfo.collectionID}`}>
+        {trackInfo.name}
+      </Link>
+      <p className="text-sm text-gray-400">{trackInfo.artist}</p>
       </div>
       <RewindIcon className="w-8 h-8" onClick={prevTrack}/>
       <div onClick={togglePlay}>

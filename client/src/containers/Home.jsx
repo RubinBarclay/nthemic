@@ -29,9 +29,11 @@ const Home = ({ play }) => {
           id: track.id,
           uri: track.uri,
           name: track.name,
-          album: track.album.name,
           type: track.type,
+          album: track.album.name,
+          collectionID: track.album.id,
           artist: track.artists[0].name,
+          index: track.track_number - 1,
           albumCoverLG: track.album.images[1].url,
           albumCoverSM: track.album.images[2].url,
           duration: track.duration_ms
@@ -45,10 +47,10 @@ const Home = ({ play }) => {
       .then(data => {
         console.log(data.body);
         setNewReleases(data.body.albums.items.map(album => ({
-          id: album.id,
-          uri: album.uri,
-          album: album.name,
+          // uri: album.uri,
           type: album.type,
+          album: album.name,
+          collectionID: album.id,
           artist: album.artists[0].name,
           albumCoverLG: album.images[1].url,
           albumCoverSM: album.images[2].url,
@@ -60,10 +62,10 @@ const Home = ({ play }) => {
       .then(data => {
         console.log(data.body);
         const playlists = data.body.playlists.items.map(playlist => ({
-          id: playlist.id,
-          uri: playlist.uri,
+          // uri: playlist.uri,
           type: playlist.type,
           name: playlist.name,
+          collectionID: playlist.id,
           description: playlist.description,
           albumCoverLG: playlist.images[0].url,
         }))
@@ -77,12 +79,12 @@ const Home = ({ play }) => {
   }, [accessToken])
 
   return featuredPlaylist ? (
-    <div className="overflow-y-scroll border-b border-gray-700 scrollbar-hide col-span-8 grid-cols-12">
+    <div className="w-full h-full">
       <Header playlist={featuredPlaylist} play={play} />
       <div className="p-4">
         <FeaturedBar title="Your Top Tracks" items={topTracks} play={play} />
         <FeaturedBar title="New music" items={newReleases} play={play} />
-        <FeaturedBar title="Featured Playlists"  items={featuredPlaylists} play={play} />
+        <FeaturedBar title="Featured Playlists" items={featuredPlaylists} play={play} />
       </div>
     </div>
   ) : null
