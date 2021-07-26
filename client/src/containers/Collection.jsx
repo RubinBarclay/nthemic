@@ -72,42 +72,44 @@ const Collection = ({ play }) => {
 
   return collectionInfo ? (
     <div className="w-full h-full px-48 pt-32">
-      <div className="flex items-center h-1/3">
-        <img className="w-64 h-auto"src={collectionInfo.albumCoverLG} alt={collectionInfo.name} />
-        <div className="pl-6">
-          <h1 className="text-5xl">{collectionInfo.name}</h1>
-          <h2 className="py-2 text-xl text-gray-400">By: {collectionInfo.author}</h2>
+      <div className="border-2 border-t-0 border-gray-800">
+        <div className="flex items-center h-auto bg-gray-800">
+          <img className="w-64 h-auto"src={collectionInfo.albumCoverLG} alt={collectionInfo.name} />
+          <div className="pl-6">
+            <h1 className="text-5xl">{collectionInfo.name}</h1>
+            <h2 className="py-2 text-xl text-gray-400">By: {collectionInfo.author}</h2>
+          </div>
+          <button 
+            className="px-6 py-3 ml-auto mr-16 text-xl bg-transparent border-2 border-gray-200 rounded-full hover:bg-gray-200 hover:text-gray-900 transition-colors whitespace-nowrap" 
+            onClick={() => play(collectionInfo)}>Play now</button>
         </div>
-        <button 
-          className="px-6 py-3 ml-auto mr-16 text-xl border-2 border-gray-200 rounded-full whitespace-nowrap" 
-          onClick={() => play(collectionInfo)}>Play now</button>
-      </div>
 
-      <table className="w-full mt-8 text-lg text-center">
-        <thead>
-          <tr className="pt-2">
-            <th>#</th>
-            <th className="pl-2 text-left">Track</th>
-            <th><ClockIcon className="w-5 h-auto mx-auto"/></th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            collectionInfo.tracks.map((track, index) => (
-              <tr 
-                key={track.id}
-                onClick={() => play(track, index)}
-                onMouseOver={() => setHover(true)}
-                onMouseOut={() => setHover(false)}
-                className="h-4 border border-t-4 border-b-4 border-transparent">
-                <td>{hover ? <PlayIcon className="w-5 h-auto mx-auto" /> : index + 1}</td>
-                <td className="pl-2 text-left">{track.name}</td>
-                <td>{displayDuration(track.duration)}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
+        <table className="w-full mt-5 text-lg text-center">
+          <thead>
+            <tr>
+              <th className="w-8">#</th>
+              <th className="pl-2 text-left">Track</th>
+              <th className="w-16"><ClockIcon className="w-5 h-auto mx-auto"/></th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              collectionInfo.tracks.map((track, index) => (
+                <tr 
+                  key={track.id}
+                  onClick={() => play(track, index)}
+                  onMouseOver={() => setHover(index)}
+                  onMouseOut={() => setHover(null)}
+                  className="h-4 leading-8 hover:bg-gray-800">
+                  <td>{hover === index ? <PlayIcon className="w-5 h-auto mx-auto" /> : index + 1}</td>
+                  <td className="pl-2 text-left">{track.name}</td>
+                  <td>{displayDuration(track.duration)}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   ) : null;
 }

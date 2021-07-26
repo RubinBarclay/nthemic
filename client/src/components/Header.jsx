@@ -11,7 +11,10 @@ const Header = ({ playlist, play }) => {
       <div className="z-10 text-white">
         {/*<h2 className="text-5xl">{playlist.name}</h2> */}
         <h3 className="w-2/3 my-2 text-4xl">{playlist.description.replace(/Cover:.*$/, '')}</h3>
-        <button onClick={() => play(playlist)} className="px-6 py-3 my-2 text-xl bg-transparent border-2 border-white rounded-full transform transition duration-150 hover:scale-105">
+        <button 
+          onClick={() => play(playlist)} 
+          className="px-6 py-3 my-2 text-xl bg-transparent border-2 border-white rounded-full transform transition duration-150 hover:scale-105"
+          className="px-6 py-3 text-xl bg-transparent border-2 border-gray-200 rounded-full hover:bg-gray-200 hover:text-gray-900 transition-colors whitespace-nowrap">
           Listen now
         </button>
       </div>
