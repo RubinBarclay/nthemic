@@ -76,7 +76,7 @@ const Collection = ({ play }) => {
         <div className="flex items-center h-auto bg-gray-800">
           <img className="w-64 h-auto"src={collectionInfo.albumCoverLG} alt={collectionInfo.name} />
           <div className="pl-6">
-            <h1 className="text-5xl">{collectionInfo.name}</h1>
+            <h1 className="text-4xl">{collectionInfo.name}</h1>
             <h2 className="py-2 text-xl text-gray-400">By: {collectionInfo.author}</h2>
           </div>
           <button 
@@ -110,6 +110,7 @@ const Collection = ({ play }) => {
           </tbody>
         </table>
       </div>
+      <div className="p-8">{/* Cheap way to get bottom padding to work... */}</div>
     </div>
   ) : null;
 }
