@@ -47,7 +47,7 @@ const Nthemic = ({ code }) => {
         </div>
       </AuthCodeContext.Provider>
     </Router>
-  ) : null // <-- this will be a loading component
+  ) : null
 }
 
 export default Nthemic

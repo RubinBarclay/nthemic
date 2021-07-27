@@ -7,18 +7,18 @@ import AuthCodeContext from '../context/AuthCodeContext';
 const Search = ({ play }) => {
   const accessToken = useContext(AuthCodeContext);
   const [search, setSearch] = useState('');
-  const [trackResults, setTrackResults] = useState([]);
-  const [albumResults, setAlbumResults] = useState([]);
-  const [playlistResults, setPlaylistResults] = useState([]);
+  const [trackResults, setTrackResults] = useState(null);
+  const [albumResults, setAlbumResults] = useState(null);
+  const [playlistResults, setPlaylistResults] = useState(null);
 
   const spotifyApi = new SpotifyWebApi({
     clientId: '11c9d0da629948fb87a800307b571162',
   })
 
   const reset = () => {
-    setTrackResults([]);
-    setAlbumResults([]);
-    setPlaylistResults([]);
+    setTrackResults(null);
+    setAlbumResults(null);
+    setPlaylistResults(null);
   }
 
   useEffect(() => {
@@ -79,9 +79,9 @@ const Search = ({ play }) => {
   return (
     <div className="w-full h-full">
       <SearchField setSearch={setSearch} />
-      <SearchResults type="Songs" results={trackResults} play={play} />
-      <SearchResults type="Albums" results={albumResults} play={play} />
-      <SearchResults type="Playlists" results={playlistResults} play={play} />
+      { trackResults ? <SearchResults type="Songs" results={trackResults} play={play} /> : null }
+      { albumResults ? <SearchResults type="Albums" results={albumResults} play={play} /> : null }
+      { playlistResults ? <SearchResults type="Playlists" results={playlistResults} play={play} /> : null }
     </div>
   )
 }
