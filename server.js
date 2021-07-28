@@ -48,7 +48,6 @@ app.post('/refresh', (req, res) => {
     refreshToken
   })   
 
-  // clientId, clientSecret and refreshToken has been set on the api object previous to this call.
   spotifyApi.refreshAccessToken()
     .then(data => {
       res.json({

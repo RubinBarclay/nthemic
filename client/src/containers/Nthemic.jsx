@@ -26,10 +26,6 @@ const Nthemic = ({ code }) => {
     setCurrentItem({ item: item, index: index })
   }
 
-  useEffect(() => {
-    console.log('CurrentItem: ', currentItem)
-  }, [currentItem])
-
   return accessToken ? (
     <Router>
       <AuthCodeContext.Provider value={accessToken}>

@@ -67,8 +67,6 @@ const MusicBar = ({ currentItem: { item, index } }) => {
     if (!item) return;
     if (!accessToken) return;
 
-    console.log('SETTING TRACKINFO: ', item)
-
     spotifyApi.setAccessToken(accessToken);
 
     switch (item.type) {
@@ -88,9 +86,6 @@ const MusicBar = ({ currentItem: { item, index } }) => {
               name: track.name,
               duration: track.duration_ms,
             })
-
-            console.log(data.body.items.map(extractTrackInfo))
-            console.log(data.body.items[0])
 
             // Set info for chosen track
             setTrackInfo(extractTrackInfo(data.body.items[index]));
@@ -115,9 +110,6 @@ const MusicBar = ({ currentItem: { item, index } }) => {
               albumCoverLG: track.track.album.images[1].url,
               albumCoverSM: track.track.album.images[2].url
             })
-
-            console.log(data.body.items.map(extractTrackInfo))
-            console.log(data.body.items[0])
 
             // Set info for chosen track
             setTrackInfo(extractTrackInfo(data.body.items[index]));
