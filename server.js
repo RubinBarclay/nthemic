@@ -9,7 +9,7 @@ const app = express()
 require('dotenv').config()
 
 // Serve static files from build folder
-app.use(express.static(path.join(__dirname, '../client/dist')));
+app.use(express.static(path.join(__dirname, './client/dist')));
 
 // Middleware
 app.use(express.json())
