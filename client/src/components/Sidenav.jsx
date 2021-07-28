@@ -26,7 +26,6 @@ const Sidenav = () => {
           <CogIcon className="w-6 h-6" />
           <span className="pl-4">Settings</span>
         </NavLink>
-
       </div>
     </div>
   )

@@ -7,7 +7,7 @@ const SearchField = ({ setSearch }) => {
         type="text" 
         placeholder="Search" 
         onChange={e => setSearch(e.target.value)}
-        className="w-1/3 px-2 text-2xl bg-transparent border-b-2 border-purple-500 focus:border-purple-600" />
+        className="w-1/3 px-2 text-2xl bg-transparent border-b-2 border-purple-500 outline-none focus:border-purple-600" />
     </div>
   )
 }
