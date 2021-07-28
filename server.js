@@ -8,8 +8,10 @@ const app = express()
 // Access custom .env variables
 require('dotenv').config()
 
-// Serve static files from build folder
-app.use(express.static(path.join(__dirname, './client/dist')));
+// Serve static files from build folder if in production mode
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, './client/dist')));
+}
 
 // Middleware
 app.use(express.json())
