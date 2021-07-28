@@ -24,7 +24,6 @@ const Home = ({ play }) => {
     // Get user's top tracks
     spotifyApi.getMyTopTracks({ limit : 10 })
       .then(data => {
-        console.log(data.body);
         setTopTracks(data.body.items.map(track => ({
           id: track.id,
           uri: track.uri,
@@ -45,7 +44,6 @@ const Home = ({ play }) => {
     // Get new releases
     spotifyApi.getNewReleases({ limit : 10 })
       .then(data => {
-        console.log(data.body);
         setNewReleases(data.body.albums.items.map(album => ({
           // uri: album.uri,
           type: album.type,
@@ -60,7 +58,6 @@ const Home = ({ play }) => {
 
     spotifyApi.getFeaturedPlaylists({ limit : 11 })
       .then(data => {
-        console.log(data.body);
         const playlists = data.body.playlists.items.map(playlist => ({
           // uri: playlist.uri,
           type: playlist.type,

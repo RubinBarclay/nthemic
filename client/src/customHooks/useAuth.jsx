@@ -8,6 +8,7 @@ const useAuth = (code) => {
   // Login Handler
   useEffect(() => {
     const url = 'http://localhost:4000/login';
+    // const url = 'https://nthemic.herokuapp.com/login';
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -34,6 +35,7 @@ const useAuth = (code) => {
 
     const interval = setInterval(() => {
       const url = 'http://localhost:4000/refresh';
+      // const url = 'https://nthemic.herokuapp.com/refresh';
       const options = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -22,7 +22,6 @@ const Collection = ({ play }) => {
     spotifyApi.setAccessToken(accessToken);
     if (type === 'album' || type === 'track') {
       spotifyApi.getAlbum(id).then(data => {
-        console.log(data.body)
         setCollectionInfo({
           type: type,
           collectionID: id,
@@ -45,9 +44,7 @@ const Collection = ({ play }) => {
       })
     } else if (type === 'playlist') {
       spotifyApi.getPlaylist(id).then(data => {
-        console.log(data.body)
         setCollectionInfo({
-          // tracks, image(s), name(s) etc.
           type: type,
           collectionID: id,
           name: data.body.name,

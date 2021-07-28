@@ -1,10 +1,17 @@
 const express = require('express')
 const cors = require('cors')
+const path = require('path')
 const SpotifyWebApi = require('spotify-web-api-node')
 
 const app = express()
 
+// Access custom .env variables
 require('dotenv').config()
+
+// Serve static files from build folder if in production mode
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, './client/dist')));
+}
 
 // Middleware
 app.use(express.json())
@@ -41,7 +48,6 @@ app.post('/refresh', (req, res) => {
     refreshToken
   })   
 
-  // clientId, clientSecret and refreshToken has been set on the api object previous to this call.
   spotifyApi.refreshAccessToken()
     .then(data => {
       res.json({
@@ -55,4 +61,4 @@ app.post('/refresh', (req, res) => {
   );
 })
 
-app.listen(4000)
+app.listen(process.env.PORT || 4000)

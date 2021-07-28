@@ -29,7 +29,6 @@ const Search = ({ play }) => {
     spotifyApi.setAccessToken(accessToken);
 
     spotifyApi.searchTracks(search, { limit: 6 }).then(data => {
-      // console.log(data.body.tracks.items[0]);
       if (cancel) return;
       setTrackResults(data.body.tracks.items.map(track => ({
         id: track.id,
@@ -46,7 +45,6 @@ const Search = ({ play }) => {
     })
 
     spotifyApi.searchAlbums(search, { limit: 6 }).then(data => {
-      console.log(data.body);
       if (cancel) return;
       setAlbumResults(data.body.albums.items.map(album => ({
         id: album.id,
@@ -61,7 +59,6 @@ const Search = ({ play }) => {
     })
 
     spotifyApi.searchPlaylists(search, { limit: 6 }).then(data => {
-      console.log(data.body);
       if (cancel) return;
       setPlaylistResults(data.body.playlists.items.map(playlist => ({
         id: playlist.id,

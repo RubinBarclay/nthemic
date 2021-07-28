@@ -36,9 +36,6 @@ const ProgressBar = ({
 
     setTransition(false);
     setProgressState('0%');
-
-    console.log('TRACK:', track)
-    console.log('td', track?.duration)
   }, [track])
 
   const updateProgress = () => {
