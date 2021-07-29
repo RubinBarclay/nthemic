@@ -7,7 +7,7 @@ const useAuth = (code) => {
 
   // Login Handler
   useEffect(() => {
-    const url = 'http://localhost:4000/loginO';
+    const url = 'http://localhost:4000/login';
     // const url = 'https://nthemic.herokuapp.com/login';
     const options = {
       method: 'POST',
