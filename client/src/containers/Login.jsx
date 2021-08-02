@@ -11,7 +11,7 @@ const Login = () => {
   useEffect(() => {
     const browser = Bowser.getParser(window.navigator.userAgent);
 
-    // If browser is not desktop Chrome don't display login page
+    // If browser is not desktop Chrome or Edge don't display login button
     if (!browser.satisfies({ desktop: { chrome: ">60", edge: ">79" } })) {
       setDisplayBtn(false);
       setMessage(
