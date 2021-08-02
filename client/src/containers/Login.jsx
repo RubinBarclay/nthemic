@@ -12,23 +12,23 @@ const Login = () => {
     const browser = Bowser.getParser(window.navigator.userAgent);
 
     // If browser is not desktop Chrome don't display login page
-    if (!browser.satisfies({ desktop: { chrome: ">60" } })) {
+    if (!browser.satisfies({ desktop: { chrome: ">60", edge: ">79" } })) {
       setDisplayBtn(false);
       setMessage(
-        <p className="py-10 text-lg">
-          The Spotify Web Playback SDK currently does not <br />
-          support your browser. Please try using the latest <br />
-          version of Google Chrome on a computer.<br />
+        <p className="w-4/5 py-10 text-lg xl:w-1/4 lg:w-1/3 sm:w-1/2">
+          The Spotify Web Playback SDK currently does not 
+          support your browser. Please try using the desktop
+          version of Google Chrome or Microsoft Edge.
         </p> 
       )
     }
 
     if (new RegExp('error').test(window.location.href)) {
       setMessage(
-        <p className="py-10 text-lg">
-          An error occured during the authentication process.<br />
-          You must have Spotify Premium in order to use this app,<br />
-          or it could be a temporary problem with Spotify's servers.<br />
+        <p className="w-4/5 py-10 text-lg xl:w-1/4 lg:w-1/3 sm:w-1/2">
+          An error occured during the authentication process.
+          You must have Spotify Premium in order to use this app,
+          or it could be a temporary problem with Spotify's servers.
         </p> 
       )
     }
