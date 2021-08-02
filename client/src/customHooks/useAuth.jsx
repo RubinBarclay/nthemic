@@ -18,20 +18,20 @@ const useAuth = (code) => {
     fetch(url, options)
       .then(res => res.json())
       .then(data => {
-        setAccessToken(data.accessToken)
-        setRefreshToken(data.refreshToken)
-        setExpiresIn(data.expiresIn)
-        window.history.pushState({}, null, '/')
+        setAccessToken(data.accessToken);
+        setRefreshToken(data.refreshToken);
+        setExpiresIn(data.expiresIn);
+        window.history.pushState({}, null, '/');
       })
       .catch(() => {
-        window.location = '/'
+        window.location = '/error';
       })
     }, [code])
 
   // Refresh handler
   useEffect(() => {
     // Prevent refresh if either variable is undefined
-    if (!refreshToken || !expiresIn) return
+    if (!refreshToken || !expiresIn) return;
 
     const interval = setInterval(() => {
       // const url = 'http://localhost:4000/refresh';
@@ -45,11 +45,11 @@ const useAuth = (code) => {
       fetch(url, options)
         .then(res => res.json())
         .then(data => {
-          setAccessToken(data.accessToken)
-          setExpiresIn(data.expiresIn)
+          setAccessToken(data.accessToken);
+          setExpiresIn(data.expiresIn);
         })
         .catch(() => {
-          window.location = '/'
+          window.location = '/expired';
         })
     }, (expiresIn - 60) * 1000)
 
